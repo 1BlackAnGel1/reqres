@@ -1,0 +1,29 @@
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+public class Program
+{
+    public static async Task Main()
+    {
+        string apiUrl = "https://reqres.in/api/users/2";
+        HttpClient httpClient = new HttpClient();
+
+        try
+        {
+            var response = await httpClient.DeleteAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("User deleted successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to delete user. Status code: {response.StatusCode}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"HTTP request failed: {ex.Message}");
+        }
+    }
+}
