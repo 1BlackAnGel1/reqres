@@ -1,0 +1,50 @@
+using System;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+
+public class User
+{
+    public string Name { get; set; }
+    public string Job { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+
+public class Program
+{
+    public static async Task Main()
+    {
+        string apiUrl = "https://reqres.in/api/users/2";
+        HttpClient httpClient = new HttpClient();
+
+        var updatedUser = new User
+        {
+            Name = "morpheus",
+            Job = "zion resident"
+        };
+
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync(apiUrl, updatedUser);
+            if (response.IsSuccessStatusCode)
+            {
+                var updatedUserResponse = await response.Content.ReadFromJsonAsync<User>();
+                if (updatedUserResponse != null)
+                {
+                    Console.WriteLine("User updated successfully.");
+                    Console.WriteLine($"Name: {updatedUserResponse.Name}");
+                    Console.WriteLine($"Job: {updatedUserResponse.Job}");
+                    Console.WriteLine($"Updated At: {updatedUserResponse.UpdatedAt}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Failed to update user. Status code: {response.StatusCode}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"HTTP request failed: {ex.Message}");
+        }
+    }
+}
