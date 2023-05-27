@@ -1,0 +1,54 @@
+using System;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+
+public class RegisterRequest
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+}
+
+public class ErrorResponse
+{
+    public string Error { get; set; }
+}
+
+public class Program
+{
+    public static async Task Main()
+    {
+        string apiUrl = "https://reqres.in/api/register";
+        HttpClient httpClient = new HttpClient();
+
+        var registerRequest = new RegisterRequest
+        {
+            Email = "sydney@fife"
+        };
+
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync(apiUrl, registerRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Registration successful.");
+            }
+            else
+            {
+                var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                if (errorResponse != null)
+                {
+                    Console.WriteLine($"Registration failed. Error: {errorResponse.Error}");
+                }
+                else
+                {
+                    Console.WriteLine($"Registration failed. Status code: {response.StatusCode}");
+                }
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"HTTP request failed: {ex.Message}");
+        }
+    }
+}
