@@ -1,0 +1,61 @@
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+
+public class Resource
+{
+    public int Id { get; set; }
+    public string Email { get; set; }
+    public string First_name { get; set; }
+    public string Last_name { get; set; }
+    public string Avatar { get; set; }
+}
+
+public class ResourceListResponse
+{
+    public int Page { get; set; }
+    public int Per_page { get; set; }
+    public int Total { get; set; }
+    public int Total_pages { get; set; }
+    public List<Resource> Data { get; set; }
+}
+
+public class Program
+{
+    public static async Task Main()
+    {
+        string apiUrl = "https://reqres.in/api/users?page=2";
+        HttpClient httpClient = new HttpClient();
+
+        try
+        {
+            var response = await httpClient.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                var resourceListResponse = await response.Content.ReadFromJsonAsync<ResourceListResponse>();
+                if (resourceListResponse != null)
+                {
+                    foreach (var resource in resourceListResponse.Data)
+                    {
+                        Console.WriteLine($"Resource ID: {resource.Id}");
+                        Console.WriteLine($"Email: {resource.Email}");
+                        Console.WriteLine($"First Name: {resource.First_name}");
+                        Console.WriteLine($"Last Name: {resource.Last_name}");
+                        Console.WriteLine($"Avatar: {resource.Avatar}");
+                        Console.WriteLine();
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Failed to get resource list. Status code: {response.StatusCode}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"HTTP request failed: {ex.Message}");
+        }
+    }
+}
